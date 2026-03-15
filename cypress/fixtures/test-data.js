@@ -12,7 +12,7 @@ export const priceSliderScenarios = [
     {
         scenario: 'Just Inside Boundaries',
         min: 1,
-        max: 199
+        max: 198
     },
     {
         scenario: 'Single Point Boundary',

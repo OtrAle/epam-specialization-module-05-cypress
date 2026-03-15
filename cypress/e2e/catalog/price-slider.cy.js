@@ -19,4 +19,5 @@ describe('Browse Products - Price Range Slider', () => {
         CatalogPage.priceSlider.getRange().should('deep.equal', { min: 100, max: 100 });
         CatalogPage.grid.noResults.should('be.visible');
     });
+
 });

@@ -1,4 +1,6 @@
-class PriceSlider {
+import BasePage from '../../../base.page';
+
+class PriceSlider extends BasePage {
 
     get handleMin() {
         return cy.get('.ngx-slider-pointer-min');
@@ -8,67 +10,73 @@ class PriceSlider {
         return cy.get('.ngx-slider-pointer-max');
     }
 
-    get displayedMinPrice() {
-        return cy.get('.ngx-slider-model-value');
-    }
-
-    get displayedMaxPrice() {
-        return cy.get('.ngx-slider-model-high');
-    }
-
-    getHandleValue($handle) {
-        return Number($handle.attr('aria-valuenow'));
+    getHandleValue(handle) {
+        return Number(handle.attr('aria-valuenow'));
     }
 
     setSliderRange(targetMin, targetMax) {
-        this.handleMin.then($min => {
-            this.handleMax.then($max => {
-                const minLeft = parseFloat($min.css('left'));
-                const maxLeft = parseFloat($max.css('left'));
-                const minValue = this.getHandleValue($min);
-                const maxValue = this.getHandleValue($max);
-                const pxPerUnit = (maxLeft - minLeft) / (maxValue - minValue);
+        this.handleMax.then(max => {
+            if (this.getHandleValue(max) !== targetMax) {
+                this.adjustWithKeys(max, targetMax, true);
+            }
+        });
 
-                this.dragHandle($max, targetMax, maxValue, pxPerUnit);
-                this.dragHandle($min, targetMin, minValue, pxPerUnit);
-            });
+        this.handleMin.then(min => {
+            if (this.getHandleValue(min) !== targetMin) {
+                this.adjustWithKeys(min, targetMin, false);
+            }
         });
     }
 
-    dragHandle($handle, targetValue, currentValue, pxPerUnit) {
-        if (currentValue === targetValue) return;
+    adjustWithKeys(handle, targetValue, isMax) {
+        cy.wrap(handle).click().then(el => {
+            const realValue = this.getHandleValue(el);
 
-        const dragX = Math.round((targetValue - currentValue) * pxPerUnit);
+            if (targetValue === realValue) return;
 
-        cy.wrap($handle)
-            .realMouseDown()
-            .realMouseMove(dragX, 0)
-            .realMouseUp();
+            let anchorKey = '';
+            let pageKey = '';
+            let arrowKey = '';
+            let pages = 0;
+            let arrows = 0;
 
-        this.adjustWithKeys($handle, targetValue);
-    }
+            if (targetValue === 0) {
+                cy.wrap(el).type('{home}', { delay: 0 });
+                return;
+            } else if (targetValue === 200) {
+                cy.wrap(el).type('{end}', { delay: 0 });
+                return;
+            } else if (isMax) {
+                const dist = 200 - targetValue;
+                pages = Math.floor(dist / 40);
+                arrows = (dist % 40) / 2;
+                anchorKey = '{end}';
+                pageKey = '{pageDown}';
+                arrowKey = '{leftArrow}';
+            } else {
+                const dist = targetValue;
+                pages = Math.floor(dist / 40);
+                arrows = (dist % 40) / 2;
+                anchorKey = '{home}';
+                pageKey = '{pageUp}';
+                arrowKey = '{rightArrow}';
+            }
 
-    adjustWithKeys($handle, targetValue) {
-        cy.wrap($handle).then($el => {
-            const realValue = this.getHandleValue($el);
-            const diff = targetValue - realValue;
+            const anchorAndPages = anchorKey + pageKey.repeat(pages);
+            cy.wrap(el).type(anchorAndPages, { delay: 0 });
 
-            if (diff !== 0) {
-                const keys = diff > 0
-                    ? '{rightArrow}'.repeat(Math.abs(diff))
-                    : '{leftArrow}'.repeat(Math.abs(diff));
-
-                cy.wrap($el).click().type(keys, { delay: 0 });
+            if (arrows > 0) {
+                cy.wrap(el).type(arrowKey.repeat(arrows), { delay: 0 });
             }
         });
     }
 
     getRange() {
-        return this.handleMin.then($min => {
-            return this.handleMax.then($max => {
+        return this.handleMin.then(min => {
+            return this.handleMax.then(max => {
                 return {
-                    min: this.getHandleValue($min),
-                    max: this.getHandleValue($max)
+                    min: this.getHandleValue(min),
+                    max: this.getHandleValue(max)
                 };
             });
         });
