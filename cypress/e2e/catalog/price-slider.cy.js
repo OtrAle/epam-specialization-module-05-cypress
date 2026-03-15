@@ -11,6 +11,16 @@ describe('Browse Products - Price Range Slider', () => {
         it(`UC-3: should validate: ${scenario} to filter products between ${min} and ${max}`, () => {
             CatalogPage.priceSlider.setSliderRange(min, max);
             CatalogPage.priceSlider.getRange().should('deep.equal', { min, max });
+
+            CatalogPage.sort.sortDropdown.select('price,desc');
+            CatalogPage.grid.sortingCompleted.should('exist');
+
+            CatalogPage.grid.productCards.first().then(card => {
+                cy.wrap(CatalogPage.grid.getProductPrice(card)).invoke('text').then(priceText => {
+                    const price = parseFloat(priceText.replace(/[^0-9.]/g, ''));
+                    expect(price).to.be.lte(max);
+                });
+            });
         });
     });
 

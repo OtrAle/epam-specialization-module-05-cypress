@@ -15,11 +15,6 @@ export const priceSliderScenarios = [
         max: 198
     },
     {
-        scenario: 'Single Point Boundary',
-        min: 100,
-        max: 100
-    },
-    {
         scenario: 'Mid-Range',
         min: 40,
         max: 160
