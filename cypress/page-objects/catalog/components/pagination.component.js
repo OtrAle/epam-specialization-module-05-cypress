@@ -1,6 +1,4 @@
-import BasePage from '../../base.page';
-
-class Pagination extends BasePage {
+class Pagination {
 
     get nextButton() {
         return cy.get('[aria-label="Next"]');

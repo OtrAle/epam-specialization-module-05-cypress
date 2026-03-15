@@ -1,6 +1,4 @@
-import BasePage from '../../../base.page';
-
-class Sort extends BasePage {
+class Sort {
 
     get sortDropdown() {
         return cy.get('[data-test="sort"]');

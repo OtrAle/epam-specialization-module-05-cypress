@@ -1,22 +1,28 @@
 import CatalogPage from '../../page-objects/catalog/catalog.page';
-import { priceSliderScenarios } from '../../fixtures/test-data';
+import { filters, filterParents } from '../../fixtures/test-data';
 
-describe('Browse Products - Price Range Slider', () => {
+describe('Browse Products - Checkbox Filters', () => {
 
     beforeEach(() => {
         CatalogPage.visit();
     });
 
-    priceSliderScenarios.forEach(({ scenario, min, max }) => {
-        it(`UC-3: should validate: ${scenario} to filter products between ${min} and ${max}`, () => {
-            CatalogPage.priceSlider.setSliderRange(min, max);
-            CatalogPage.priceSlider.getRange().should('deep.equal', { min, max });
+    filters.forEach((filterName) => {
+        it(`UC-10: should update the product grid when the filter "${filterName}" is applied`, () => {
+            CatalogPage.filters.filterCheckbox(filterName).click();
+            CatalogPage.filters.filterCheckbox(filterName).should('be.checked');
+            CatalogPage.grid.filterCompleted.should('exist');
         });
     });
 
-    it('UC-4: should display a "no results" message for an empty price range', () => {
-        CatalogPage.priceSlider.setSliderRange(100, 100);
-        CatalogPage.priceSlider.getRange().should('deep.equal', { min: 100, max: 100 });
-        CatalogPage.grid.noResults.should('be.visible');
+    filterParents.forEach(({ parent, children }) => {
+        it(`UC-11: should auto-select all subcategories when "${parent}" is selected`, () => {
+            CatalogPage.filters.filterCheckbox(parent).click();
+            CatalogPage.grid.filterCompleted.should('exist');
+            CatalogPage.filters.filterCheckbox(parent).should('be.checked');
+            children.forEach((child) => {
+                CatalogPage.filters.filterCheckbox(child).should('be.checked');
+            });
+        });
     });
 });

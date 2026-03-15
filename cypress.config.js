@@ -7,7 +7,7 @@ module.exports = defineConfig({
     baseUrl: 'https://practicesoftwaretesting.com/',
     defaultCommandTimeout: 10000,
     retries: {
-      runMode: 2,
+      runMode: 1,
       openMode: 0
     },
     setupNodeEvents(on, config) {

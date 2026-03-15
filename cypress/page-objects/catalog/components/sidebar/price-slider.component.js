@@ -1,6 +1,4 @@
-import BasePage from '../../../base.page';
-
-class PriceSlider extends BasePage {
+class PriceSlider {
 
     get handleMin() {
         return cy.get('.ngx-slider-pointer-min');

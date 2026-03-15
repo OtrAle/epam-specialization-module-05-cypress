@@ -1,6 +1,4 @@
-import BasePage from '../../../base.page';
-
-class Filters extends BasePage {
+class Filters {
 
     filterCheckbox(name) {
         return cy.get('label').filter((_, el) => {

@@ -1,6 +1,4 @@
-import BasePage from '../../base.page';
-
-class ProductGrid extends BasePage {
+class ProductGrid {
 
     get container() {
         return cy.get('div.container[data-test]');

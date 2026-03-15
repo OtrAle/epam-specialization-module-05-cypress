@@ -1,6 +1,5 @@
-import BasePage from '../base.page'
-
-class Navbar extends BasePage {
+class Navbar {
+    
     get categoriesMenu() {
         return cy.get('[data-test="nav-categories"]');
     }
